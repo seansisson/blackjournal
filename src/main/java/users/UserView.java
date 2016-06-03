@@ -1,53 +1,93 @@
 package main.java.users;
 
+import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 
-public class UserView {
+public class UserView extends Application {
 
-    public UserView() {}
+    private Stage window;
+    private Scene scene;
+    private GridPane grid;
+    private Button createUserButton;
+    private Button loginButton;
+    private Label userNameFieldLabel;
+    private Label passwordFieldLabel;
+    private TextField userNameField;
+    private TextField passwordField;
 
-    public Scene userLoginScene() {
-        // Initialize the grid for the layout
-        // TODO: Slap this into it's own function
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 10, 10));
+    public UserView() {
+
+        // Initialize grid
+        grid = new GridPane();
+        grid.setPadding(new Insets(50, 50, 50, 50));
         grid.setVgap(8);
         grid.setHgap(10);
 
-        // Initialize and position labels/buttons for username field
-        Label userNameFieldLabel = new Label("Username: ");
-        TextField userNameField = new TextField();
+        // Initialize fields, buttons, & labels
+        userNameFieldLabel = new Label("Username: ");
+        userNameField = new TextField();
+        passwordFieldLabel = new Label("Password: ");
+        passwordField = new PasswordField();
+        loginButton = new Button("Log in");
+        createUserButton = new Button("Create User");
+
+        // Set positions of components
         GridPane.setConstraints(userNameFieldLabel, 0, 0);
         GridPane.setConstraints(userNameField, 1, 0);
-
-        // Initialize and position labels/buttons for username field
-        Label passwordFieldLabel = new Label("Password: ");
-        TextField passwordField = new TextField();
         GridPane.setConstraints(passwordFieldLabel, 0, 1);
         GridPane.setConstraints(passwordField, 1, 1);
-
-        // Initialize and position login button
-        Button loginButton = new Button("Login");
         GridPane.setConstraints(loginButton, 1, 2);
+        GridPane.setConstraints(createUserButton, 1, 3);
 
-        // Add items to grid
+        // Add components to grid
         grid.getChildren().addAll(
                 userNameFieldLabel,
                 userNameField,
                 passwordFieldLabel,
                 passwordField,
-                loginButton
+                loginButton,
+                createUserButton
         );
 
-        Scene scene = new Scene(grid, 400, 250);
-        return scene;
+        scene = new Scene(grid, 500, 250);
     }
 
-    public void userUpdateScene() {}
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.window = primaryStage;
+        this.window.setTitle("BlackJournal Task Manager");
+        this.window.setScene(this.scene);
+        this.window.show();
+    }
+
+    void hide() {
+        this.window.hide();
+    }
+
+    String getUserName() {
+        return this.userNameField.getText();
+    }
+
+    String getPassword() {
+        return this.passwordField.getText();
+    }
+
+    public void clearText() {
+        this.userNameField.clear();
+        this.passwordField.clear();
+    }
+
+    void handleLogin(EventHandler loginEventHandler) {
+        this.loginButton.setOnAction(loginEventHandler);
+    }
+
+    void handleCreateUser(EventHandler createUserEventHandler) {
+        this.createUserButton.setOnAction(createUserEventHandler);
+    }
 }

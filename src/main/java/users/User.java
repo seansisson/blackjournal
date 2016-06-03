@@ -1,49 +1,34 @@
-// Created by Sean on 5/19/2016.
 package main.java.users;
 
-import main.java.tasks.TaskList;
+import java.io.Serializable;
+import main.java.tasks.Task;
 
 
-public class User {
-    /* User model
-    * Contains information describing a user of the system. Each user has 3
-    * task lists by default: To Do, In Progress, and Done.
-    */
+public class User implements Serializable {
 
-    // Fields
     private String userName;
     private String password;
-    private TaskList[] taskLists;
+    private Task[] tasks;
 
-    // Methods
     public User() {
         this.userName = "";
         this.password = "";
-        initTaskLists();
+        this.tasks = new Task[50];
     }
 
-    public User(String userName, String password) {
+    User(String userName, String password) {
         this.userName = userName;
         this.password = password;
-        initTaskLists();
+        this.tasks = null;
     }
 
-    private void initTaskLists() {
-        this.taskLists[0] = new TaskList("To Do");
-        this.taskLists[1] = new TaskList("In Progress");
-        this.taskLists[2] = new TaskList("Done");
-    }
-
-    public String getUserName() {
+    String getUserName() {
         return userName;
     }
 
     public String getPassword() {
-        return password;
-    }
 
-    public TaskList[] getTaskLists() {
-        return taskLists;
+        return password;
     }
 
     public void setUserName(String userName) {
@@ -54,9 +39,9 @@ public class User {
         this.password = password;
     }
 
-    public void setTaskLists(TaskList[] taskLists) {
-        this.taskLists = taskLists;
+    @Override
+    public String toString() {
+        return new StringBuffer(" Username: ")
+                .append(this.userName).toString();
     }
-
-
 }

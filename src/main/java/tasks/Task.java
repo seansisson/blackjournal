@@ -1,40 +1,47 @@
 package main.java.tasks;
 
 
-public class Task {
+import java.io.Serializable;
+
+public class Task implements Serializable {
     /* Task model
     * Individual tasks for the user to read and update. Tasks have an ID, a name,
     * and a description.
     */
 
-    // Fields
+    private int id;
     private String name;
-    private String description;
 
-    // Methods
     public Task() {
         this.name = "";
-        this.description = "";
     }
 
-    public Task(String name, String description) {
+    public Task(String name) {
         this.name = name;
-        this.description = description;
     }
 
-    public String getName() {
+    int getId() {
+        return id;
+    }
+
+    String getName() {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public String toString() {
+        return new StringBuffer(" Id: ")
+                .append(this.id)
+                .append(" Name: ")
+                .append(this.name).toString();
     }
+
 }
