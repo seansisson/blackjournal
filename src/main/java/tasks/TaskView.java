@@ -15,131 +15,121 @@ import javafx.stage.Stage;
 
 public class TaskView extends Application {
 
-    private Stage window;
+    Stage window;
     private Scene scene;
-    private BorderPane layout;
-    private GridPane controlGrid;
-    private GridPane taskListGrid;
-    private Button createButton;
-    private Button editButton;
-    private Button deleteButton;
-    private TextField nameField;
-    private TableView todoTable;
-    private TableView inProgressTable;
-    private TableView doneTable;
-    private TableColumn todoTableColumn = new TableColumn("Todo: ");
-    private TableColumn inProgressTableColumm = new TableColumn("In progress: ");
-    private TableColumn doneTableColumn = new TableColumn("Done: ");
-    private final ObservableList<Task> data;
 
-    public TaskView() {
+    private BorderPane mainPane = new BorderPane();
+    private GridPane taskListGridPane = new GridPane();
+    private GridPane controlPanelGridPane = new GridPane();
 
-        // Initialize the main layout
-        this.layout = new BorderPane();
+    private Button createButton = new Button("Create task");
+    private Button logoutButton = new Button("Logout");
+    private TextField nameField = new TextField();
 
-        // Example data for now
-        this.data = FXCollections.observableArrayList(
-                new Task("Finish this programming assignment"),
-                new Task("Work on KPSU website"),
-                new Task("Help Peyton with programming homework friday")
-        );
+    private TableView<Task> todoTable = new TableView<Task>();
+    private TableView<Task> inProgressTable = new TableView<Task>();
+    private TableView<Task> doneTable = new TableView<Task>();
+    private TableColumn todoTableColumn = new TableColumn("To do:");
+    private TableColumn inProgressColumn = new TableColumn("In progress:");
+    private TableColumn doneColumn = new TableColumn("Done");
 
-        // Initialize the grid containing the buttons & name field
-        controlGrid = new GridPane();
+    ObservableList<Task> tasksTodo = FXCollections.observableArrayList();
+    ObservableList<Task> tasksInProgress = FXCollections.observableArrayList();
+    ObservableList<Task> tasksDone = FXCollections.observableArrayList();
 
-        // Initialize buttons & name field
-        createButton = new Button("Create task");
-        editButton = new Button("Edit task");
-        deleteButton = new Button("Delete Task");
-        nameField = new TextField();
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-        // Initialize the grid containing the task lists
-        taskListGrid = new GridPane();
+    @Override
+    public void start(Stage stage) {
+        window = stage;
+        window.setTitle("blackjournal - tasks");
 
-        // Initialize tables and table columns
-        todoTable = new TableView<Task>();
-        todoTableColumn = new TableColumn("Todo: ");
-        inProgressTable = new TableView<Task>();
-        inProgressTableColumm = new TableColumn("In progress: ");
-        doneTable = new TableView<Task>();
-        doneTableColumn = new TableColumn("Done: ");
+        window.setWidth(800);
+        window.setHeight(400);
 
-        // Make name field larger
-        nameField.setMinWidth(250);
-
-        // Set table cells
         todoTable.setEditable(true);
-        todoTable.setItems(data);
-        todoTableColumn.setMinWidth(todoTable.getWidth());
-        todoTableColumn.setCellValueFactory(
-                new PropertyValueFactory<Task, String>("Name")
-        );
-        todoTable.getColumns().add(todoTableColumn);
-        inProgressTable.setEditable(true);
-        inProgressTableColumm.setMinWidth(inProgressTable.getWidth());
-        inProgressTableColumm.setCellValueFactory(
-                new PropertyValueFactory<Task, String>("Name")
-        );
-        inProgressTable.getColumns().add(inProgressTableColumm);
-        doneTable.setEditable(true);
-        doneTableColumn.setMinWidth(doneTable.getWidth());
-        doneTableColumn.setCellValueFactory(
-                new PropertyValueFactory<Task, String>("Name")
-        );
-        doneTable.getColumns().add(doneTableColumn);
-        taskListGrid.setPadding(new Insets(10, 10, 10, 10));
-        taskListGrid.setHgap(10);
-        controlGrid.setPadding(new Insets(10, 10, 10, 10));
-        controlGrid.setHgap(10);
 
-        // Position tables
+        todoTableColumn = new TableColumn("To do: ");
+        todoTableColumn.setMinWidth(200);
+        todoTableColumn.setCellValueFactory(
+                new PropertyValueFactory("name")
+        );
+        todoTable.setItems(tasksTodo);
+        todoTable.getColumns().add(todoTableColumn);
+
+        inProgressColumn = new TableColumn("In Progress: ");
+        inProgressColumn.setMinWidth(200);
+        inProgressColumn.setCellValueFactory(
+                new PropertyValueFactory("name")
+        );
+        inProgressTable.setItems(tasksInProgress);
+        inProgressTable.getColumns().add(inProgressColumn);
+
+        doneColumn = new TableColumn("Done: ");
+        doneColumn.setMinWidth(200);
+        doneColumn.setCellValueFactory(
+                new PropertyValueFactory("name")
+        );
+        doneTable.setItems(tasksDone);
+        doneTable.getColumns().add(doneColumn);
+
+        // Set move task listeners
+        handleDoubleClick(todoTable, tasksTodo, tasksInProgress);
+        handleDoubleClick(inProgressTable, tasksInProgress, tasksDone);
+        handleDoubleClick(doneTable, tasksDone, null);
+
         GridPane.setConstraints(todoTable, 0, 0);
         GridPane.setConstraints(inProgressTable, 1, 0);
         GridPane.setConstraints(doneTable, 2, 0);
 
-        // Position controls
-        GridPane.setConstraints(nameField, 0, 0);
-        GridPane.setConstraints(createButton, 1, 0);
-        GridPane.setConstraints(editButton, 2, 0);
-        GridPane.setConstraints(deleteButton, 3, 0);
-
-        // Add tables to task list grid
-        taskListGrid.getChildren().addAll(
+        taskListGridPane.setHgap(10);
+        taskListGridPane.setVgap(10);
+        taskListGridPane.setPadding(new Insets(10, 10, 10, 10));
+        taskListGridPane.getChildren().addAll(
                 todoTable,
                 inProgressTable,
                 doneTable
         );
 
-        // Add controls to button grid
-        controlGrid.getChildren().addAll(
+        GridPane.setConstraints(nameField, 0, 0);
+        GridPane.setConstraints(createButton, 1, 0);
+        GridPane.setConstraints(logoutButton, 3, 0);
+
+        nameField.setMinWidth(200);
+        controlPanelGridPane.setHgap(10);
+        controlPanelGridPane.setVgap(10);
+        controlPanelGridPane.setPadding(new Insets(10, 10, 10, 10));
+        controlPanelGridPane.getChildren().addAll(
                 nameField,
                 createButton,
-                editButton,
-                deleteButton
+                logoutButton
         );
 
-        // Finally add control and task grids to the main layout
-        layout.setCenter(taskListGrid);
-        layout.setBottom(controlGrid);
+        mainPane.setCenter(taskListGridPane);
+        mainPane.setBottom(controlPanelGridPane);
 
-        // Set the scene
-        scene = new Scene(layout, 800, 400);
+        scene = new Scene(mainPane, 800, 400);
+        window.setScene(scene);
+        window.show();
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.window = primaryStage;
-        this.window.setTitle("BlackJournal Task Manager");
-        this.window.setScene(this.scene);
-        this.window.show();
+    void addTask(Task task, ObservableList<Task> taskList) {
+        taskList.add(task);
     }
 
-    void addToData(Task task) {
-        this.data.add(task);
+    void removeTask(Task task, ObservableList<Task> taskList) {
+        taskList.remove(task);
+    }
+
+    void moveTask(Task task, ObservableList<Task> source, ObservableList<Task> dest) {
+        source.remove(task);
+        dest.add(task);
     }
 
     String getNameField() {
-        return nameField.getText();
+        return this.nameField.getText();
     }
 
     void clearNameField() {
@@ -150,7 +140,30 @@ public class TaskView extends Application {
         this.createButton.setOnAction(createTaskHandler);
     }
 
-    void handleEditTask(EventHandler createTaskHandler) {
-        this.editButton.setOnAction(createTaskHandler);
+    void handleDoubleClick(TableView tableView, ObservableList source, ObservableList dest) {
+        tableView.setRowFactory( e -> {
+            TableRow<Task> row = new TableRow<Task>();
+            row.setOnMouseClicked(event -> {
+                Task task = row.getItem();
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    if (dest == null) {
+                        removeTask(task, source);
+                    } else {
+                        moveTask(task, source, dest);
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+    void handleLogout(EventHandler logoutHandler) {
+        this.logoutButton.setOnAction(logoutHandler);
+    }
+
+    void hide() {
+        // Hide the window
+
+        this.window.hide();
     }
 }

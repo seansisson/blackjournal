@@ -10,18 +10,25 @@ import javafx.stage.Stage;
 
 
 public class UserView extends Application {
+    /*
+    * View class for the user module
+    * this could implement an abstract view class
+    */
 
     private Stage window;
-    private Scene scene;
-    private GridPane grid;
-    private Button createUserButton;
-    private Button loginButton;
-    private Label userNameFieldLabel;
-    private Label passwordFieldLabel;
-    private TextField userNameField;
-    private TextField passwordField;
+    private final Scene scene;
+    private final GridPane grid;
+    private final Button createUserButton;
+    private final Button loginButton;
+    private final Label userNameFieldLabel;
+    private final Label passwordFieldLabel;
+    private final TextField userNameField;
+    private final PasswordField passwordField;
 
     public UserView() {
+        /*
+        * Constructor
+        */
 
         // Initialize grid
         grid = new GridPane();
@@ -31,8 +38,8 @@ public class UserView extends Application {
 
         // Initialize fields, buttons, & labels
         userNameFieldLabel = new Label("Username: ");
-        userNameField = new TextField();
         passwordFieldLabel = new Label("Password: ");
+        userNameField = new TextField();
         passwordField = new PasswordField();
         loginButton = new Button("Log in");
         createUserButton = new Button("Create User");
@@ -55,39 +62,51 @@ public class UserView extends Application {
                 createUserButton
         );
 
+        // Finally, initialize scene
         scene = new Scene(grid, 500, 250);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.window = primaryStage;
-        this.window.setTitle("BlackJournal Task Manager");
-        this.window.setScene(this.scene);
-        this.window.show();
-    }
-
-    void hide() {
-        this.window.hide();
-    }
-
-    String getUserName() {
-        return this.userNameField.getText();
-    }
-
-    String getPassword() {
-        return this.passwordField.getText();
+    public void start(Stage window) throws Exception {
+        /*
+        * Main method for the user GUI
+        */
+        this.window = window;
+        window.setTitle("blackjournal - log in");
+        window.setScene(this.scene);
+        window.show();
     }
 
     public void clearText() {
+        // Reset text in the user login form
+
         this.userNameField.clear();
         this.passwordField.clear();
     }
 
+    void hide() {
+        // Hide the window
+
+        this.window.hide();
+    }
+
     void handleLogin(EventHandler loginEventHandler) {
+        // Set login event handler for login button
+
         this.loginButton.setOnAction(loginEventHandler);
     }
 
     void handleCreateUser(EventHandler createUserEventHandler) {
+        // Set create user event handler for create user button
+
         this.createUserButton.setOnAction(createUserEventHandler);
+    }
+
+    String getUsernameInput() {
+        return this.userNameField.getText();
+    }
+
+    String getPasswordInput() {
+        return this.passwordField.getText();
     }
 }

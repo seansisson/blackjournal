@@ -1,93 +1,124 @@
 package main.java.tasks;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import java.sql.*;
 
-import java.io.*;
+import javafx.event.EventHandler;
+import javafx.stage.Stage;
+
+import main.java.users.User;
+import main.java.users.UserController;
+import main.java.utils.Utilities;
 
 
 public class TaskController {
+    /*
+    *  Controller for the task module
+    *  This could implement an abstract class
+    */
 
-    private Task model;
     private TaskView view;
+    private User user;
+    private Task[][] taskLists = new Task[3][];
 
-    public TaskController(Task taskModel, TaskView taskView) {
+    public TaskController(User user) {
+        /*
+        * Default constructor
+        */
 
-        this.model = taskModel;
-        this.view = taskView;
+        this.view = new TaskView();
+        this.user = user;
 
-        this.view.handleCreateTask(createTaskEventHandler());
-        this.view.handleEditTask(editTaskEventHandler());
+        // Register event handlers
+        this.view.handleCreateTask(handleCreateTask());
+        this.view.handleLogout(handleLogout());
     }
 
-    private EventHandler createTaskEventHandler() {
-
-        return new EventHandler() {
-
-            @Override
-            public void handle(Event event) {
-                String name = view.getNameField();
-                Task task = new Task(name);
-
-                System.out.println("Created task: " + name);
-
-                view.addToData(task);
-                view.clearNameField();
-            }
-        };
-    }
-
-    private EventHandler editTaskEventHandler () {
-
-        return new EventHandler() {
-
-            @Override
-            public void handle(Event event) {
-                String name = view.getNameField();
-
-            }
-        };
-    }
-
-    private void serializeTask(String name) {
-
-        Task task = new Task(name);
-
-        try {
-            FileOutputStream f = new FileOutputStream("task.ser");
-            ObjectOutputStream o = new ObjectOutputStream(f);
-            o.writeObject(task);
-            System.out.println("Task object written to file");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Task deserializeTask() {
-
+    private void createTask(String name) {
+        /*
+        * Create a task, add it to the list
+        */
         Task task;
 
-        try {
-            FileInputStream f = new FileInputStream("task.ser");
-            ObjectInputStream o = new ObjectInputStream(f);
-            task = (Task) o.readObject();
-            o.close();
-            System.out.println("Id: " + task.getId());
-            System.out.println("Name: " + task.getName());
+        if (isValid(name)) {
+            System.out.println("Task is valid");
+            task = new Task(name);
 
+            // Save task to database
+            addTaskToDatabase(task);
+            this.view.addTask(task, this.view.tasksTodo);
+            this.view.clearNameField();
+        }
+
+        else {
+            // Input was invalid
+
+            this.view.clearNameField();
+            System.out.println("Invalid entry");
+        }
+    }
+
+    private void logout() {
+        System.out.println("Saving task lists...");
+
+
+
+        view.hide();
+        UserController userController = new UserController();
+        userController.start(new Stage());
+    }
+
+    private Task addTaskToDatabase(Task task) {
+
+        Connection connection;
+        PreparedStatement preparedStatement;
+
+        try {
+            connection = Utilities.getDatabaseConnection();
+            System.out.println("Connection established");
+            preparedStatement = connection.prepareStatement(
+                    "INSERT INTO tasks (name, userId, listType) VALUES (?, ?, ?);"
+            );
+
+            // Bind params & execute query
+            preparedStatement.setString(1, task.getName());
+            preparedStatement.execute();
+
+            // Close connection
+            connection.close();
             return task;
         }
         catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
 
-    private boolean isValid(String input) {
+    EventHandler handleCreateTask() {
+        return event -> createTask(this.view.getNameField());
+    }
 
-        // Parse string to check if it contains alphanumeric values
-        // as well as some special characters
-        return input.matches("[A-Za-z0-9 _.,!]*");
+    private EventHandler handleLogout() {
+        return event -> logout();
+    }
+
+    private boolean isValid(String input) {
+        /*
+        * Parse string to check if it contains alphanumeric values
+        * as well as some special characters
+        */
+
+        if (input != null) if (input.matches("[A-Za-z0-9 _.,!]*+")) return true;
+        return false;
+    }
+
+    public void start(Stage window) {
+        /*
+        * Wrapper function launches task view's start method
+        */
+
+        try {
+            this.view.start(window);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,47 +1,58 @@
 package main.java.users;
 
-import java.io.Serializable;
-import main.java.tasks.Task;
 
+import main.java.tasks.TaskList;
 
-public class User implements Serializable {
+public class User {
 
-    private String userName;
+    private int id;
+    private String username;
     private String password;
-    private Task[] tasks;
+    private TaskList[] taskLists;
 
     public User() {
-        this.userName = "";
+        this.username = "";
         this.password = "";
-        this.tasks = new Task[50];
+
+        this.taskLists[0] = new TaskList("todo", id);
+        this.taskLists[1] = new TaskList("in_progress", id);
+        this.taskLists[2] = new TaskList("done", id);
     }
 
-    User(String userName, String password) {
-        this.userName = userName;
+    User(String username, String password) {
+        this.username = username;
         this.password = password;
-        this.tasks = null;
     }
 
-    String getUserName() {
-        return userName;
+    public int getId() {
+        return this.id;
     }
 
-    public String getPassword() {
+    String getUsername() {
+        return username;
+    }
 
+    String getPassword() {
         return password;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public TaskList[] getTaskLists() {
+        return this.taskLists;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return new StringBuffer(" Username: ")
-                .append(this.userName).toString();
+    public void setTaskLists(TaskList[] taskLists) {
+        this.taskLists = taskLists;
+    }
+
+    public int length() {
+        return this.taskLists.length;
     }
 }

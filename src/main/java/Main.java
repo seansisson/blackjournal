@@ -15,40 +15,31 @@
 package main.java;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import main.java.tasks.Task;
-import main.java.tasks.TaskController;
-import main.java.tasks.TaskView;
-import main.java.users.User;
-import main.java.users.UserView;
 import main.java.users.UserController;
+import main.java.utils.Utilities;
 
 
 public class Main extends Application {
 
-    private Stage window;
-
     public static void main(String args[]) {
-        // Launch GUI application
+        /*
+        * Main program method
+        * Loads MySQL and launches the application
+        */
 
+        Utilities.initMysqlDatabase();
         launch(args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        User user = new User();
-        UserView userView = new UserView();
-        UserController userController = new UserController(user, userView);
+        /*
+        * Main GUI method
+        */
 
-        window = stage;
-        userView.start(window);
+        UserController userController = new UserController();
+        userController.start(stage);
     }
 }
